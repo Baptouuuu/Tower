@@ -1,4 +1,4 @@
-log_path: %root_dir%/deploy.logs
+log_path: %root_dir%/deploy.log
 
 envs:
     envName:
