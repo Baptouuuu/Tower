@@ -106,10 +106,10 @@ class DeployCommand extends Command implements ContainerAwareInterface
         $process->run(function ($type, $buffer) use ($logger, $output) {
             if ($type === 'err') {
                 $logger->error($buffer);
-                $output->writeln(sprintf('<error>%s</error>', $buffer));
+                $output->writeln($buffer);
             } else {
                 $logger->info($buffer);
-                $output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', $buffer));
+                $output->writeln($buffer);
             }
         });
 
