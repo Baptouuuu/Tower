@@ -21,7 +21,7 @@ class Application
         $this->dir = $dir;
         $this->console = new Console();
         $this->container = new ContainerBuilder();
-        $loader = new YamlFileLoader($this->container, new FileLocator($this->dir));
+        $loader = new YamlFileLoader($this->container, new FileLocator($this->dir.'/config'));
         $loader->load('services.yml');
 
         $this->container->setParameter('root_dir', $this->dir);
@@ -37,7 +37,7 @@ class Application
      */
     protected function loadConfig()
     {
-        $config = Yaml::parse($this->dir.'/config.yml');
+        $config = Yaml::parse($this->dir.'/config/config.yml');
         $processor = new Processor();
         $configuration = new Configuration();
         $config = $processor->processConfiguration(
