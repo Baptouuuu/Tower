@@ -19,6 +19,30 @@ class Application
         $this->dir = $dir;
         $this->console = new Console();
         $this->container = new ContainerBuilder();
+
+        $this->loadConfig();
+    }
+
+    /**
+     * Loads the node childs + envs from the config.yml
+     * and inject the data inside the container
+     *
+     * @return Twr\Application
+     */
+    protected function loadConfig()
+    {
+        $config = Yaml::parse($this->dir.'/config.yml');
+        $processor = new Processor();
+        $configuration = new Configuration();
+        $config = $processor->processConfiguration(
+            $configuration,
+            [$config]
+        );
+
+        $this->container->setParameter('envs', $config['envs']);
+        $this->container->setParameter('childs', $config['childs']);
+
+        return $this;
     }
 
     /**

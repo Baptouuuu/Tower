@@ -1,0 +1,13 @@
+envs:
+    envName:
+        path: /path/to/git/folder
+        commands:
+            - mysqldump
+            - git reset --hard HEAD
+            - git pull
+            - ./app/console doctrine:migrations:migrate
+
+childs:
+    serverName:
+        host: hostname.tld
+        path: /path/to/tower/folder
