@@ -7,6 +7,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class Application
 {
@@ -19,6 +21,10 @@ class Application
         $this->dir = $dir;
         $this->console = new Console();
         $this->container = new ContainerBuilder();
+        $loader = new YamlFileLoader($this->container, new FileLocator($this->dir));
+        $loader->load('services.yml');
+
+        $this->container->setParameter('root_dir', $this->dir);
 
         $this->loadConfig();
     }
@@ -41,6 +47,7 @@ class Application
 
         $this->container->setParameter('envs', $config['envs']);
         $this->container->setParameter('childs', $config['childs']);
+        $this->container->setParameter('log_path', $config['log_path']);
 
         return $this;
     }

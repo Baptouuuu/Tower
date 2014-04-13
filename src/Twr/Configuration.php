@@ -14,6 +14,12 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
+                ->scalarNode('log_path')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+            ->end()
+            ->children()
                 ->arrayNode('envs')
                     ->useAttributeAsKey('name')
                     ->prototype('array')

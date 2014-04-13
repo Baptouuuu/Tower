@@ -1,0 +1,23 @@
+parameters:
+    logger.class: Monolog\Logger
+    logger.level.debug: 100
+    logger.level.info: 200
+    logger.level.notice: 250
+    logger.level.warning: 300
+    logger.level.error: 400
+    logger.level.critical: 500
+    logger.level.alert: 550
+    logger.level.emergency: 600
+    logger.stream.class: Monolog\Handler\StreamHandler
+
+services:
+    logger.stream:
+        class: %logger.stream.class%
+        arguments: ['%log_path%', '%logger.level.info%']
+        public: false
+
+    logger:
+        class: %logger.class%
+        arguments: ['tower']
+        calls:
+            - ['pushHandler', ['@logger.stream']]

@@ -1,3 +1,5 @@
+log_path: %root_dir%/deploy.logs
+
 envs:
     envName:
         path: /path/to/git/folder
