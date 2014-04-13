@@ -116,5 +116,33 @@ class DeployCommand extends Command implements ContainerAwareInterface
         if (!$process->isSuccessful()) {
             throw new \RuntimeException($msg);
         }
+
+        if ($cascade) {
+            $cmd = sprintf(
+                'ssh %s "%s/twr deploy -n -c %s %s"',
+                $conf['host'],
+                $conf['path'],
+                count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
+                $async ? '&> /dev/null &' : ''
+            );
+
+            $logger->info(sprintf('Running "%s"...', $cmd));
+            $output->writeln(sprintf('<info>Running "<fg=cyan>%s</fg=cyan>"...</info>', $cmd));
+
+            $process = new Process($cmd);
+            $process->run(function ($type, $buffer) use ($logger, $output) {
+                if ($type === 'err') {
+                    $logger->error($buffer);
+                    $output->writeln(sprintf('<error>%s</error>', $buffer));
+                } else {
+                    $logger->info($buffer);
+                    $output->writeln($buffer);
+                }
+            });
+
+            if (!$process->isSuccessful()) {
+                throw new \RuntimeException($msg);
+            }
+        }
     }
 }
