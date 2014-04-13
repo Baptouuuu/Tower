@@ -92,7 +92,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
         $output->writeln(sprintf('<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>', $child));
 
         $cmd = sprintf(
-            'ssh %s "%s/twr deploy:env %s %s"',
+            'ssh %s "%s/twr deploy:env -n %s %s"',
             $conf['host'],
             $conf['path'],
             implode(' ', $envs),
