@@ -13,6 +13,9 @@ envs:
             - git reset --hard HEAD
             - git pull
             - ./app/console doctrine:migrations:migrate
+            - %macroName%
+        #rollback: optional
+            #- git reset --hard HEAD~10
 
 childs:
     serverName:
