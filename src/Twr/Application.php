@@ -55,9 +55,8 @@ class Application
         $finder = new Finder();
         $iterator = $finder
             ->files()
-            ->depth(0)
             ->name('*Command.php')
-            ->in($this->dir);
+            ->in($this->dir.'/src');
 
         foreach($iterator as $file) {
             require_once $file->getRealPath();
