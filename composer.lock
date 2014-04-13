@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "9e6b7a8b451c51818a43df592d619688",
+    "hash": "4d248cd84a776f4552a9d79a18c526a5",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -368,6 +368,55 @@
             "time": "2014-03-03 12:53:01"
         },
         {
+            "name": "symfony/process",
+            "version": "dev-master",
+            "target-dir": "Symfony/Component/Process",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Process.git",
+                "reference": "10767aeb15bd6fc0c7cf18fa6883e5237ea7cf29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/10767aeb15bd6fc0c7cf18fa6883e5237ea7cf29",
+                "reference": "10767aeb15bd6fc0c7cf18fa6883e5237ea7cf29",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Process\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-04-03 05:23:50"
+        },
+        {
             "name": "symfony/yaml",
             "version": "v2.3.12",
             "target-dir": "Symfony/Component/Yaml",
@@ -425,7 +474,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "symfony/finder": 20
+        "symfony/finder": 20,
+        "symfony/process": 20
     },
     "platform": [
 
