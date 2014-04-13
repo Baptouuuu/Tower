@@ -47,6 +47,7 @@ class Application
 
         $this->container->setParameter('envs', $config['envs']);
         $this->container->setParameter('childs', $config['childs']);
+        $this->container->setParameter('macros', $config['macros']);
         $this->container->setParameter('log_path', $config['log_path']);
 
         return $this;

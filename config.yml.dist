@@ -1,5 +1,10 @@
 log_path: %root_dir%/deploy.log
 
+macros:
+    macroName:
+        - cmd1
+        - cmd2
+
 envs:
     envName:
         path: /path/to/git/folder

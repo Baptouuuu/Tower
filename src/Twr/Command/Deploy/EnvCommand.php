@@ -94,6 +94,17 @@ class EnvCommand extends Command implements ContainerAwareInterface
      */
     protected function runCommand($logger, $output, $cmd, $path, $env)
     {
+        if (preg_match('/%\w+%/i', $cmd)) {
+            $this->runMacro(
+                $logger,
+                $output,
+                $cmd,
+                $path,
+                $env
+            );
+            return;
+        }
+
         $msg = sprintf('Running command "%s"', $cmd);
         $logger->info($msg, [$env]);
         $output->writeln(sprintf('<comment>%s</comment>', $msg));
@@ -114,6 +125,40 @@ class EnvCommand extends Command implements ContainerAwareInterface
             $logger->emergency($msg);
             $output->writeln(sprintf('<error>%s</error>', $msg));
             throw new \RuntimeException($msg);
+        }
+    }
+
+    /**
+     * Run a set of commands
+     *
+     * @param Monolog\Logger $logger
+     * @param Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $macro
+     * @param string $path
+     * @param string $env
+     */
+    protected function runMacro($logger, $output, $macro, $path, $env)
+    {
+        $macros = $this->container->getParameter('macros');
+        $macro = substr($macro, 1, -1);
+
+        if (!isset($macros, $macro)) {
+            $msg = sprintf('Macro "%s" not found', $macro);
+            $logger->error($msg);
+            $output->writeln(sprintf('<error>%s</error>', $msg));
+            throw new \RuntimeException($msg);
+        }
+
+        $cmds = $macros[$macro];
+
+        foreach ($cmds as $cmd) {
+            $this->runCommand(
+                $logger,
+                $output,
+                $cmd,
+                $path,
+                $env
+            );
         }
     }
 }
