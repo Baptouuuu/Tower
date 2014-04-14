@@ -37,13 +37,18 @@ class Application
      */
     protected function loadConfig()
     {
-        $config = Yaml::parse($this->dir.'/config/config.yml');
-        $processor = new Processor();
-        $configuration = new Configuration();
-        $config = $processor->processConfiguration(
-            $configuration,
-            [$config]
-        );
+        try {
+            $config = Yaml::parse($this->dir.'/config/config.yml');
+            $processor = new Processor();
+            $configuration = new Configuration();
+            $config = $processor->processConfiguration(
+                $configuration,
+                [$config]
+            );
+        } catch (\Exception $e) {
+            echo 'Invalid config.yml, please verify your syntax'.PHP_EOL;
+            exit(1);
+        }
 
         $this->container->setParameter('envs', $config['envs']);
         $this->container->setParameter('childs', $config['childs']);
