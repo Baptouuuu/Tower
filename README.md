@@ -102,3 +102,23 @@ childs:
 * rotate your logs, every output for a local deployment is logged (so it can quickly become huge)
 * a macro can contain another macro, still the same syntax: `%macroName%`
 * setup ssh keys between a node and its childs to connect without password, otherwise cascade deployment will fail
+
+## Usage
+
+Deploy an env when your on the machine:
+```sh
+twr deploy:env envName [... envNameX] [--continue]
+```
+The `continue` flag is useful when you deploy multiple environments, if one fails it will continue to deploy the others (this flag is off by default, and always off when deploying in cascade)
+
+Deploy a child
+```sh
+twr deploy child [... childX] [--env=env1] [--env=envX] [--async] [-c|--cascade]
+```
+This would run the command `twr deploy:env env1 envX` on the machine called `child`.
+
+`async` flag run the previous command in background and displays you the resulting PID, and then move to the next child specified to deploy.
+
+`cascade` flag tells the child to deploy its childs when itself is deployed succesfully.
+
+**Important**: when cascading, all childs and subchilds of the node you specified will be deployed (so be sure how to architect your tree).
