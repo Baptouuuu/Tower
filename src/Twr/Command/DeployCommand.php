@@ -92,13 +92,39 @@ class DeployCommand extends Command implements ContainerAwareInterface
         $output->writeln(sprintf('<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>', $child));
 
         $cmd = sprintf(
-            'ssh %s "%s/twr deploy:env -n %s %s"',
+            'ssh %s \'%s/twr deploy:env -n %s %s\'%s',
             $conf['host'],
             $conf['path'],
             implode(' ', $envs),
-            $async ? '&> /dev/null &' : ''
+            $async ? '&> /dev/null & echo $!' : '',
+            $async ? ' | { read PID; echo Deployment PID: $PID; }' : ''
         );
 
+        $this->runCommand($logger, $output, $cmd);
+
+        if ($cascade) {
+            $cmd = sprintf(
+                'ssh %s \'%s/twr deploy -n -c %s %s\'%s',
+                $conf['host'],
+                $conf['path'],
+                count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
+                $async ? '&> /dev/null & echo $!' : '',
+                $async ? ' | { read PID; echo Deployment PID: $PID; }' : ''
+            );
+
+            $this->runCommand($logger, $output, $cmd);
+        }
+    }
+
+    /**
+     * Run the specified command
+     *
+     * @param Monolog\Logger $logger
+     * @param Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $cmd
+     */
+    protected function runCommand($logger, $output, $cmd)
+    {
         $logger->info(sprintf('Running "%s"...', $cmd));
         $output->writeln(sprintf('<info>Running "<fg=cyan>%s</fg=cyan>"...</info>', $cmd));
 
@@ -114,35 +140,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
         });
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException($msg);
-        }
-
-        if ($cascade) {
-            $cmd = sprintf(
-                'ssh %s "%s/twr deploy -n -c %s %s"',
-                $conf['host'],
-                $conf['path'],
-                count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
-                $async ? '&> /dev/null &' : ''
-            );
-
-            $logger->info(sprintf('Running "%s"...', $cmd));
-            $output->writeln(sprintf('<info>Running "<fg=cyan>%s</fg=cyan>"...</info>', $cmd));
-
-            $process = new Process($cmd);
-            $process->run(function ($type, $buffer) use ($logger, $output) {
-                if ($type === 'err') {
-                    $logger->error($buffer);
-                    $output->writeln(sprintf('<error>%s</error>', $buffer));
-                } else {
-                    $logger->info($buffer);
-                    $output->writeln($buffer);
-                }
-            });
-
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException($msg);
-            }
+            throw new \RuntimeException($process->getExitCodeText(), $process->getExitCode());
         }
     }
 }
