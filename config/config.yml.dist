@@ -7,7 +7,7 @@ macros:
 
 envs:
     envName:
-        path: /path/to/git/folder
+        path: /path/to/project/folder
         commands:
             - mysqldump
             - git reset --hard HEAD
