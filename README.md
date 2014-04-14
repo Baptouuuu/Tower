@@ -47,6 +47,10 @@ To be really efficient (meaning not overloading your VCS server, especially if d
 
 *Note*: I talk about git here, but your not forced to use it (but cool kids do ;))
 
+*Note*: When cascading, if a child fail to deploy, it's subtree won't be deployed
+
+Another use case would be you have a single server for your app, and other servers for related services required by your first server. You could imply, with this notion of tree, that every time you deploy your app it triggers the deployment of those related services (so everything is always up-to-date).
+
 ## Installation
 
 Clone this repository to the machine you want as a node
