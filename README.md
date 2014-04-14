@@ -68,6 +68,11 @@ Create your `config.yml` file
 cp config/config.yml.dist config/config.yml
 ```
 
+(Optional) For easier access, make the command available as a global one
+```sh
+ln -sn /tower/folder/twr /usr/bin/twr
+```
+
 Done!
 
 ## Configuration
