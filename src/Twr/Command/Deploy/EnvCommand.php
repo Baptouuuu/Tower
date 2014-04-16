@@ -98,7 +98,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
      */
     protected function runCommand($logger, $output, $cmd, $path, $env)
     {
-        if (preg_match('/%\w+%/i', $cmd)) {
+        if (preg_match('/^%.+%$/i', $cmd)) {
             $this->runMacro(
                 $logger,
                 $output,
