@@ -62,6 +62,10 @@ class EnvCommand extends Command implements ContainerAwareInterface
                         );
                     }
 
+                    $msg = sprintf('Environment "%s" deployed successfully!', $env);
+                    $logger->info($msg);
+                    $output->writeln(sprintf('<info>%s</info>', $msg));
+
                 } catch (\RuntimeException $e) {
 
                     foreach ($conf['rollback'] as $cmd) {
