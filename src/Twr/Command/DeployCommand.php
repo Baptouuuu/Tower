@@ -92,7 +92,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
         $output->writeln(sprintf('<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>', $child));
 
         $cmd = sprintf(
-            'ssh %s \'%s/twr deploy:env -n %s %s\'%s',
+            'ssh -C %s \'%s/twr deploy:env -n %s %s\'%s',
             $conf['host'],
             $conf['path'],
             implode(' ', $envs),
@@ -104,7 +104,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
         if ($cascade) {
             $cmd = sprintf(
-                'ssh %s \'%s/twr deploy -n -c %s %s\'%s',
+                'ssh -C %s \'%s/twr deploy -n -c %s %s\'%s',
                 $conf['host'],
                 $conf['path'],
                 count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
