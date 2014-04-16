@@ -1,19 +1,15 @@
 log_path: %root_dir%/deploy.log
 
-macros:
-    macroName:
-        - cmd1
-        - cmd2
-
 envs:
     envName:
         path: /path/to/project/folder
         commands:
-            - mysqldump
-            - git reset --hard HEAD
-            - git pull
-            - ./app/console doctrine:migrations:migrate
-            - %macroName%
+            - %kill_deploy%
+            - %prepare_release%
+            - %symfony%
+            - %grunt%
+            - %activate_release%
+            - %clean_releases%
         #rollback: optional
             #- git reset --hard HEAD~10
 
@@ -21,3 +17,23 @@ childs:
     serverName:
         host: hostname.tld
         path: /path/to/tower/folder
+
+macros:
+    prepare_release:
+        - git clone git@github.com:Baptouuuu/Tower.git releases/$(date "+%F-%T")
+        - cd releases/$(ls releases | sort -nr | head -1) ; git checkout develop
+    activate_release:
+        - ln -fsn $(pwd)/releases/$(ls releases | sort -nr | head -1) $(pwd)/current
+    clean_releases:
+        - ls -l1drt $PWD/releases/* | sort -nr | tail -n +4 | xargs rm -rf
+    mysql_snapshot:
+        - mysqldump >> dumps/$(date "+%F-%T.%N") # dumps folder should be a mount to another disk or another server
+    symfony:
+        - cd releases/$(ls releases | sort -nr | head -1) ; curl -s http://getcomposer.org/installer | php
+        - cd releases/$(ls releases | sort -nr | head -1) ; ./composer.phar install --no-dev --verbose --optimize-autoloader --prefer-dist
+        - cd releases/$(ls releases | sort -nr | head -1) ; ./app/console doctrine:migrations:migrate --env=prod
+        - cd releases/$(ls releases | sort -nr | head -1) ; ./app/console cache:warmup --env=prod
+    grunt:
+        - cd releases/$(ls releases | sort -nr | head -1)/web ; grunt build
+    kill_deploy:  # if another tower deploy is running kill it, should be used only if you have one env on the server
+        - ps aux | grep "./twr deploy:env" | grep -v grep | awk '{print $2}' | tail -n +2 | xargs "kill"
