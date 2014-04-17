@@ -24,19 +24,20 @@ Drawbacks:
 * Cross relation between parent and childs
 
 Example:
-
->              A (you)
->             / \
->            /   \
->           /     \
->   (prod) B       C (staging)
->         / \       \
->        /   \       \
->       /     \       \
->      D       E       F
->      |       |
->      |       |
->      G       H
+```
+              A (you)
+             / \
+            /   \
+           /     \
+   (prod) B       C (staging)
+         / \       \
+        /   \       \
+       /     \       \
+      D       E       F
+      |       |
+      |       |
+      G       H
+```
 
 Say here the tree below `B` is also for production, with this tool you could easily place the same Tower setup on the five servers and to deploy all of them, you would run a command like `twr deploy B --cascade` and done!
 Or if you want to only deploy `H`, just to be sure everythings deploying fine, connect to the machine and locally run `twr deploy:env prod` or add this as one of the child on your local machine (`A`) and run `twr deploy H`. Once again it's a tree, you can start from wherever you want.
