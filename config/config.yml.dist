@@ -33,6 +33,7 @@ macros:
         - cd releases/$(ls releases | sort -nr | head -1) ; ./composer.phar install --no-dev --verbose --optimize-autoloader --prefer-dist
         - cd releases/$(ls releases | sort -nr | head -1) ; ./app/console doctrine:migrations:migrate --env=prod
         - cd releases/$(ls releases | sort -nr | head -1) ; ./app/console cache:warmup --env=prod
+        - cd releases/$(ls releases | sort -nr | head -1) ; rm composer.phar
     grunt:
         - cd releases/$(ls releases | sort -nr | head -1)/web ; grunt build
     kill_deploy:  # if another tower deploy is running kill it, should be used only if you have one env on the server
