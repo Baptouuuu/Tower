@@ -23,7 +23,7 @@ macros:
         - git clone git@github.com:Baptouuuu/Tower.git releases/$(date "+%F-%T")
         - cd releases/$(ls releases | sort -nr | head -1) ; git checkout develop
     activate_release:
-        - ln -fsn $(pwd)/releases/$(ls releases | sort -nr | head -1) $(pwd)/current
+        - ln -fsn $PWD/releases/$(ls releases | sort -nr | head -1) $PWD/current
     clean_releases:
         - ls -l1drt $PWD/releases/* | sort -nr | tail -n +4 | xargs rm -rf
     mysql_snapshot:
