@@ -117,10 +117,10 @@ class EnvCommand extends Command implements ContainerAwareInterface
         $process->run(function ($type, $buffer) use ($logger, $output) {
             if ($type === 'err') {
                 $logger->error($buffer);
-                $output->writeln(sprintf('<error>%s</error>', $buffer));
+                $output->write(sprintf('<error>%s</error>', $buffer));
             } else {
                 $logger->info($buffer);
-                $output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', $buffer));
+                $output->write(sprintf('<fg=cyan>%s</fg=cyan>', $buffer));
             }
         });
 
