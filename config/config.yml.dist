@@ -20,8 +20,7 @@ childs:
 
 macros:
     prepare_release:
-        - git clone git@github.com:Baptouuuu/Tower.git releases/$(date "+%F-%T")
-        - cd releases/$(ls releases | sort -nr | head -1) ; git checkout develop
+        - git clone -b develop --depth 1 git@github.com:Baptouuuu/Tower.git releases/$(date "+%F-%T")
     activate_release:
         - ln -fsn $PWD/releases/$(ls releases | sort -nr | head -1) $PWD/current
     clean_releases:
