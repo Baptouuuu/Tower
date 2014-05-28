@@ -23,7 +23,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
             ->addArgument(
                 'child',
                 InputArgument::IS_ARRAY,
-                'Deploy the specified childs (if none, deploy all of them'
+                'Deploy the specified childs (if none, deploy all of them)'
             )
             ->addOption(
                 'env',
