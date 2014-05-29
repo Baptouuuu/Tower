@@ -23,7 +23,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
             ->addArgument(
                 'child',
                 InputArgument::IS_ARRAY,
-                'Deploy the specified childs (if none, deploy all of them'
+                'Deploy the specified childs (if none, deploy all of them)'
             )
             ->addOption(
                 'env',
@@ -42,6 +42,13 @@ class DeployCommand extends Command implements ContainerAwareInterface
                 null,
                 InputOption::VALUE_NONE,
                 'Whether or not to deploy asynchronously the childs'
+            )
+            ->addOption(
+                'tmout',
+                't',
+                InputOption::VALUE_OPTIONAL,
+                'The process timeout in seconds',
+                3600
             );
     }
 
@@ -53,6 +60,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
         $envs = $input->getOption('env');
         $cascade = $input->getOption('cascade');
         $async = $input->getOption('async');
+        $tmout = $input->getOption('tmout');
 
         if (empty($childs)) {
             $childs = array_keys($config);
@@ -69,7 +77,8 @@ class DeployCommand extends Command implements ContainerAwareInterface
                     $conf,
                     $envs,
                     $cascade,
-                    $async
+                    $async,
+                    $tmout
                 );
             }
         }
@@ -85,8 +94,9 @@ class DeployCommand extends Command implements ContainerAwareInterface
      * @param array $envs
      * @param boolean $cascade
      * @param boolean $async
+     * @param integer $tmout
      */
-    protected function deployChild($logger, $output, $child, $conf, $envs, $cascade, $async)
+    protected function deployChild($logger, $output, $child, $conf, $envs, $cascade, $async, $tmout)
     {
         $logger->info(sprintf('Deploying "%s"...', $child));
         $output->writeln(sprintf('<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>', $child));
@@ -104,15 +114,16 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
         if ($cascade) {
             $cmd = sprintf(
-                'ssh -C -t -t %s \'%s/twr deploy -n -c %s %s\'%s',
+                'ssh -C -t -t %s \'%s/twr deploy -n -c %s -t=%s %s\'%s',
                 $conf['host'],
                 $conf['path'],
                 count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
+                $tmout,
                 $async ? '&> /dev/null & echo $!' : '',
                 $async ? ' | { read PID; echo Deployment PID: $PID; }' : ''
             );
 
-            $this->runCommand($logger, $output, $cmd);
+            $this->runCommand($logger, $output, $cmd, $tmout);
         }
     }
 
@@ -122,13 +133,15 @@ class DeployCommand extends Command implements ContainerAwareInterface
      * @param Monolog\Logger $logger
      * @param Symfony\Component\Console\Output\OutputInterface $output
      * @param string $cmd
+     * @param integer $tmout
      */
-    protected function runCommand($logger, $output, $cmd)
+    protected function runCommand($logger, $output, $cmd, $tmout)
     {
         $logger->info(sprintf('Running "%s"...', $cmd));
         $output->writeln(sprintf('<info>Running "<fg=cyan>%s</fg=cyan>"...</info>', $cmd));
 
         $process = new Process($cmd);
+        $process->setTimeout($tmout);
         $process->run(function ($type, $buffer) use ($logger, $output) {
             if ($type === 'err') {
                 $logger->error($buffer);
