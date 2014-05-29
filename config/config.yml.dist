@@ -34,6 +34,7 @@ macros:
         - cd releases/$(ls releases | sort -nr | head -1) ; ./app/console cache:warmup --env=prod
         - cd releases/$(ls releases | sort -nr | head -1) ; rm composer.phar
     grunt:
+        - cd releases/$(ls releases | sort -nr | head -1)/web ; npm install
         - cd releases/$(ls releases | sort -nr | head -1)/web ; grunt build
     kill_deploy:  # if another tower deploy is running kill it, should be used only if you have one env on the server
         - procs=$(ps aux | grep "twr deploy:env" | grep -v grep | grep -v "$(ps ef | grep "twr env:deploy" | grep -v grep | awk '{print $1}' | head -1)" | awk '{print $2}') ; if [ ! -z "$procs" ]; then echo $procs | xargs kill; fi
