@@ -44,6 +44,8 @@ class Application
                 $file = $this->dir.'/config/config.yml';
             }
 
+            $this->container->setParameter('config_path', $file);
+
             $config = Yaml::parse($file);
             $processor = new Processor();
             $configuration = new Configuration();
