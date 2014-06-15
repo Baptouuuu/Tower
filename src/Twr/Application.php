@@ -19,7 +19,7 @@ class Application
     public function __construct($dir)
     {
         $this->dir = $dir;
-        $this->console = new Console();
+        $this->console = new Console('Tower', '1.1.0');
         $this->container = new ContainerBuilder();
         $loader = new YamlFileLoader($this->container, new FileLocator($this->dir.'/config'));
         $loader->load('services.yml');
