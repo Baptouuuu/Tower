@@ -10,7 +10,7 @@ use Herrera\Phar\Update\Manifest;
 
 class SelfUpdateCommand extends Command
 {
-    const MANIFEST_FILE = 'https://github.com/Baptouu/Tower/raw/master/manifest.json';
+    const MANIFEST_FILE = 'https://github.com/Baptouuuu/Tower/raw/master/manifest.json';
 
     protected function configure()
     {
