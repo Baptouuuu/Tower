@@ -38,7 +38,13 @@ class Application
     protected function loadConfig()
     {
         try {
-            $config = Yaml::parse($this->dir.'/config/config.yml');
+            if (file_exists($this->dir.'/tower.yml')) {
+                $file = $this->dir.'/tower.yml';
+            } else {
+                $file = $this->dir.'/config/config.yml';
+            }
+
+            $config = Yaml::parse($file);
             $processor = new Processor();
             $configuration = new Configuration();
             $config = $processor->processConfiguration(
