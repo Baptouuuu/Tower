@@ -1,0 +1,21 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src",
+        "config"
+    ],
+    "files": [
+        "LICENSE",
+        "vendor/herrera-io/phar-update/res/schema.json"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["Tests"],
+            "in": "vendor"
+        }
+    ],
+    "main": "twr",
+    "output": "twr.phar",
+    "stub": true
+}
