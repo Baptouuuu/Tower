@@ -19,7 +19,7 @@ class Application
     public function __construct($dir)
     {
         $this->dir = $dir;
-        $this->console = new Console();
+        $this->console = new Console('Tower', '1.2.0');
         $this->container = new ContainerBuilder();
         $loader = new YamlFileLoader($this->container, new FileLocator($this->dir.'/config'));
         $loader->load('services.yml');
@@ -38,7 +38,15 @@ class Application
     protected function loadConfig()
     {
         try {
-            $config = Yaml::parse($this->dir.'/config/config.yml');
+            if (file_exists($this->dir.'/tower.yml')) {
+                $file = $this->dir.'/tower.yml';
+            } else {
+                $file = $this->dir.'/config/config.yml';
+            }
+
+            $this->container->setParameter('config_path', $file);
+
+            $config = Yaml::parse($file);
             $processor = new Processor();
             $configuration = new Configuration();
             $config = $processor->processConfiguration(

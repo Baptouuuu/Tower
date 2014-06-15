@@ -54,6 +54,8 @@ Another use case would be you have a single server for your app, and other serve
 
 ## Installation
 
+### Cloning
+
 Clone this repository to the machine you want as a node
 ```sh
 git clone git@github.com:Baptouuuu/Tower.git /wherever/you/want
@@ -73,6 +75,17 @@ cp config/config.yml.dist config/config.yml
 ```sh
 ln -sn /tower/folder/twr /usr/bin/twr
 ```
+
+### Phar file
+
+You can also download the [phar file](twr.phar) and create a file named `tower.yml` in your app (look at the [dist file](config/config.yml.dist) for an example).
+
+And to use it:
+```sh
+./twr.phar deploy
+```
+
+**Note**: you can run `chmod + x twr.phar && mv twr.phar /usr/bin/tower`, so you can run the tower deploy from any project.
 
 Done!
 
