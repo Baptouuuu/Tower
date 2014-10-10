@@ -1,4 +1,5 @@
 {
+    "name": "baptouuuu/tower",
     "autoload": {
         "psr-0": {
             "Twr\\": "src/"
