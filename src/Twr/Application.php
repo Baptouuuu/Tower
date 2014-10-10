@@ -27,6 +27,8 @@ class Application
         $this->container->setParameter('root_dir', $this->dir);
 
         $this->loadConfig();
+
+        $this->container->compile();
     }
 
     /**
