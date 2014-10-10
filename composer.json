@@ -1,5 +1,6 @@
 {
     "name": "baptouuuu/tower",
+    "bin": ["twr"],
     "autoload": {
         "psr-0": {
             "Twr\\": "src/"
