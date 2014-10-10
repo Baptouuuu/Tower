@@ -54,40 +54,19 @@ Another use case would be you have a single server for your app, and other serve
 
 ## Installation
 
-### Cloning
+This is done via composer. Run the following command to install to install Tower as a global dependency.
 
-Clone this repository to the machine you want as a node
 ```sh
-git clone git@github.com:Baptouuuu/Tower.git /wherever/you/want
+composer global require baptouuuu/tower
 ```
 
-Install composer
+This will install the binary file in `~/.composer/vendor/bin`.
+
+Now to have the bin file as global command you need to set the folder in your system path. You can do by adding the line below in `~/.bash_profile` or `~/.bashrc`.
+
 ```sh
-curl -sS https://getcomposer.org/installer | php ; ./composer.phar install
+export PATH=~/.composer/vendor/bin:$PATH
 ```
-
-Create your `config.yml` file
-```sh
-cp config/config.yml.dist config/config.yml
-```
-
-(Optional) For easier access, make the command available as a global one
-```sh
-ln -sn /tower/folder/twr /usr/bin/twr
-```
-
-### Phar file
-
-You can also download the [phar file](twr.phar) and create a file named `tower.yml` in your app (look at the [dist file](config/config.yml.dist) for an example).
-
-And to use it:
-```sh
-./twr.phar deploy
-```
-
-**Note**: you can run `chmod + x twr.phar && mv twr.phar /usr/bin/tower`, so you can run the tower deploy from any project.
-
-Done!
 
 ## Configuration
 
