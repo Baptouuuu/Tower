@@ -9,6 +9,9 @@ parameters:
     logger.level.alert: 550
     logger.level.emergency: 600
     logger.stream.class: Monolog\Handler\StreamHandler
+    command.deploy.class: Twr\Command\DeployCommand
+    command.config.class: Twr\Command\ConfigCommand
+    command.deploy_env.class: Twr\Command\Deploy\EnvCommand
 
 services:
     logger.stream:
@@ -21,3 +24,18 @@ services:
         arguments: ['tower']
         calls:
             - ['pushHandler', ['@logger.stream']]
+
+    command.deploy:
+        class: %command.deploy.class%
+        tags:
+            - { name: command }
+
+    command.config:
+        class: %command.config.class%
+        tags:
+            - { name: command }
+
+    command.deploy_env:
+        class: %command.deploy_env.class%
+        tags:
+            - { name: command }
