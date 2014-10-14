@@ -81,6 +81,9 @@ macros:
 envs:
     prod: # define where is a local environment + how to deploy it
         path: /var/www/my-awesome-project
+        exports: #optional
+            - echo "ENV_KEY=someEnvVariableAvailableToAllCommands"
+            - echo "FOO=$ENV_KEY"
         commands:
             - %macroName%
             - curl -sS https://getcomposer.org/installer | php ; ./composer.phar install
@@ -100,6 +103,7 @@ childs:
 * rotate your logs, every output for a local deployment is logged (so it can quickly become huge)
 * a macro can contain another macro, still the same syntax: `%macroName%`
 * setup ssh keys between a node and its childs to connect without password, otherwise cascade deployment will fail
+* an export command can reuse the previous exported values, all the exported values are available in `commands` and `rollback` ones
 
 ## Usage
 
