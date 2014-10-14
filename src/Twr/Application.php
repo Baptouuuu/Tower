@@ -60,9 +60,15 @@ class Application
             exit(1);
         }
 
-        $this->container->setParameter('envs', $config['envs']);
-        $this->container->setParameter('childs', $config['childs']);
-        $this->container->setParameter('macros', $config['macros']);
+        $this->container
+            ->get('envs_bag')
+            ->setAll($config['envs']);
+        $this->container
+            ->get('childs_bag')
+            ->setAll($config['childs']);
+        $this->container
+            ->get('macros_bag')
+            ->setAll($config['macros']);
         $this->container->setParameter('log_path', $config['log_path']);
 
         return $this;
