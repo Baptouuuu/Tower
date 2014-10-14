@@ -3,6 +3,9 @@ log_path: %root_dir%/deploy.log
 envs:
     envName:
         path: /path/to/project/folder
+        exports: #optional
+            - echo "ENV_KEY=someEnvVariableAvailableToAllCommands"
+            - echo "FOO=$ENV_KEY"
         commands:
             - %kill_deploy%
             - %prepare_release%

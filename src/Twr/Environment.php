@@ -10,7 +10,7 @@ class Environment
 {
     protected $name;
     protected $path;
-    protected $envs = [];
+    protected $exports = [];
     protected $commands = [];
     protected $rollback = [];
 
@@ -69,27 +69,27 @@ class Environment
     /**
      * Set a set of commands to build an env variables
      *
-     * @param array $envs
+     * @param array $exports
      *
      * @return Environment self
      */
 
-    public function setEnvs(array $envs)
+    public function setExports(array $exports)
     {
-        $this->envs = $envs;
+        $this->exports = $exports;
 
         return $this;
     }
 
     /**
-     * Return the envs commands
+     * Return the exports commands
      *
      * @return array
      */
 
-    public function getEnvs()
+    public function getExports()
     {
-        return $this->envs;
+        return $this->exports;
     }
 
     /**

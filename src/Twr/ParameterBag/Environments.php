@@ -43,8 +43,8 @@ class Environments
             ->setName($name)
             ->setPath($config['path']);
 
-        if (isset($config['env'])) {
-            $env->setEnvs($config['env']);
+        if (isset($config['exports'])) {
+            $env->setExports($config['exports']);
         }
 
         if (isset($config['commands'])) {
