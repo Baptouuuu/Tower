@@ -48,3 +48,8 @@ services:
 
     childs_bag:
         class: Twr\ParameterBag\Childs
+
+    command_resolver:
+        class: Twr\CommandResolver
+        calls:
+            - [setMacros, ['@macros_bag']]
