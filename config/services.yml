@@ -53,3 +53,8 @@ services:
         class: Twr\ExportsResolver
         calls:
             - [setEnvs, ['@envs_bag']]
+
+    runner:
+        class: Twr\CommandRunner
+        calls:
+            - [setLogger, ['@logger']]
