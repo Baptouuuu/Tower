@@ -77,8 +77,9 @@ class CommandRunner
 
         if (!$this->process->isSuccessful()) {
             $msg = sprintf(
-                'Command line "%s" failed',
-                $this->process->getCommandLine()
+                'Command line "%s" failed with the following exit code: %s',
+                $this->process->getCommandLine(),
+                $code
             );
 
             $this->logger->emergency($msg, ['exitCode' => $code]);
