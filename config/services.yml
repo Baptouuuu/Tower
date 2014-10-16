@@ -58,3 +58,6 @@ services:
         class: Twr\CommandRunner
         calls:
             - [setLogger, ['@logger']]
+
+    builder:
+        class: Twr\CommandBuilder
