@@ -43,6 +43,21 @@ class CommandRunner
     }
 
     /**
+     * Set the timeout of the process
+     *
+     * @param int $timeout
+     *
+     * @return CommandRunner self
+     */
+
+    public function setTimeout($timeout)
+    {
+        $this->process->setTimeout($timeout);
+
+        return $this;
+    }
+
+    /**
      * Execute the passed command
      *
      * @throws RuntimeException If the command don't return a successful exit code
