@@ -54,106 +54,86 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->container->getParameter('childs');
+        $bag = $this->container->get('childs_bag');
+        $builder = $this->container->get('builder');
+        $runner = $this->container->get('runner');
         $childs = $input->getArgument('child');
-        $logger = $this->container->get('logger');
         $envs = $input->getOption('env');
         $cascade = $input->getOption('cascade');
         $async = $input->getOption('async');
         $tmout = $input->getOption('tmout');
 
         if (empty($childs)) {
-            $childs = array_keys($config);
+            $childs = array_keys($bag->getAll());
         }
+
+        $args = $envs;
+        $namedArgs = array_map(function ($env) {
+            return '--env='.$env;
+        }, $envs);
+
+        $namedArgs[] = '-n';
+        $namedArgs[] = '-c';
+        $namedArgs[] = sprintf('-t %s', $tmout);
 
         foreach ($childs as $child) {
-            if (isset($config[$child])) {
-                $conf = $config[$child];
+            if ($bag->has($child)) {
+                $child = $bag->get($child);
 
-                $this->deployChild(
-                    $logger,
-                    $output,
-                    $child,
-                    $conf,
-                    $envs,
-                    $cascade,
-                    $async,
-                    $tmout
-                );
+                $builder
+                    ->setCommand('deploy:env')
+                    ->setArguments($args)
+                    ->setHost($child->getHost())
+                    ->setPath($child->getPath());
+
+                if ($async) {
+                    $builder->setAsync();
+                }
+
+                $cmd = $builder->getCommandLine();
+
+                $output->writeln(sprintf(
+                    '<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>',
+                    $child->getName()
+                ));
+                $output->writeln(sprintf(
+                    '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
+                    $cmd
+                ));
+
+                $runner
+                    ->setCommand($cmd)
+                    ->setTimeout($tmout)
+                    ->run(function ($type, $buffer) use ($output) {
+                        $output->write($buffer);
+                    });
+
+                if ($cascade) {
+                    $builder
+                        ->setCommand('deploy')
+                        ->setArguments($namedArgs)
+                        ->setHost($child->getHost())
+                        ->setPath($child->getPath());
+
+                    if ($async) {
+                        $builder->setAsync();
+                    }
+
+                    $cmd = $builder->getCommandLine();
+
+                    $output->writeln(sprintf(
+                        '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
+                        $cmd
+                    ));
+
+                    $runner
+                        ->setCommand($cmd)
+                        ->setTimeout($tmout)
+                        ->run(function ($type, $buffer) use ($output) {
+                            $output->write($buffer);
+                        });
+                }
             }
-        }
-    }
-
-    /**
-     * Run a command to deploy the specified envs to the specified host
-     *
-     * @param Monolog\Logger $logger
-     * @param Symfony\Component\Console\Output\OutputInterface $output
-     * @param string $child
-     * @param array $conf
-     * @param array $envs
-     * @param boolean $cascade
-     * @param boolean $async
-     * @param integer $tmout
-     */
-    protected function deployChild($logger, $output, $child, $conf, $envs, $cascade, $async, $tmout)
-    {
-        $logger->info(sprintf('Deploying "%s"...', $child));
-        $output->writeln(sprintf('<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>', $child));
-
-        $cmd = sprintf(
-            'ssh -C -t -t %s \'%s/twr deploy:env -n %s %s\'%s',
-            $conf['host'],
-            $conf['path'],
-            implode(' ', $envs),
-            $async ? '&> /dev/null & echo $!' : '',
-            $async ? ' | { read PID; echo Deployment PID: $PID; }' : ''
-        );
-
-        $this->runCommand($logger, $output, $cmd);
-
-        if ($cascade) {
-            $cmd = sprintf(
-                'ssh -C -t -t %s \'%s/twr deploy -n -c %s -t=%s %s\'%s',
-                $conf['host'],
-                $conf['path'],
-                count($envs) > 0 ? '--env='.implode(' --env=', $envs) : '',
-                $tmout,
-                $async ? '&> /dev/null & echo $!' : '',
-                $async ? ' | { read PID; echo Deployment PID: $PID; }' : ''
-            );
-
-            $this->runCommand($logger, $output, $cmd, $tmout);
-        }
-    }
-
-    /**
-     * Run the specified command
-     *
-     * @param Monolog\Logger $logger
-     * @param Symfony\Component\Console\Output\OutputInterface $output
-     * @param string $cmd
-     * @param integer $tmout
-     */
-    protected function runCommand($logger, $output, $cmd, $tmout)
-    {
-        $logger->info(sprintf('Running "%s"...', $cmd));
-        $output->writeln(sprintf('<info>Running "<fg=cyan>%s</fg=cyan>"...</info>', $cmd));
-
-        $process = new Process($cmd);
-        $process->setTimeout($tmout);
-        $process->run(function ($type, $buffer) use ($logger, $output) {
-            if ($type === 'err') {
-                $logger->error($buffer);
-                $output->write($buffer);
-            } else {
-                $logger->info($buffer);
-                $output->write($buffer);
-            }
-        });
-
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException($process->getExitCodeText(), $process->getExitCode());
         }
     }
 }
