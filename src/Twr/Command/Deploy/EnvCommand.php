@@ -35,47 +35,102 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->container->getParameter('envs');
+        $bag = $this->container->get('envs_bag');
+        $resolver = $this->container->get('command_resolver');
+        $exports_resolver = $this->container->get('exports_resolver');
+        $runner = $this->container->get('runner');
         $envs = $input->getArgument('env');
-        $logger = $this->container->get('logger');
 
         if (empty($envs)) {
-            $envs = array_keys($config);
+            $envs = array_keys($bag->getAll());
         }
 
         foreach ($envs as $env) {
-            if (isset($config[$env])) {
-                $conf = $config[$env];
-                $msg = sprintf('Starting to deploy the environment "%s"', $env);
-                $logger->info($msg);
-                $output->writeln(sprintf('<info>%s</info>', $msg));
+            if ($bag->has($env)) {
+                $env = $bag->get($env);
+                $exports = $exports_resolver->getExports(
+                    $env->getName()
+                );
+
+                $output->writeln(sprintf(
+                    '<info>Starting to deploy the environment "%s"</info>',
+                    $env->getName()
+                ));
 
                 try {
 
-                    foreach ($conf['commands'] as $cmd) {
-                        $this->runCommand(
-                            $logger,
-                            $output,
-                            $cmd,
-                            $conf['path'],
-                            $env
+                    $commands = [];
+
+                    foreach ($env->getCommands() as $cmd) {
+                        $commands = array_merge(
+                            $commands,
+                            $resolver->resolve($cmd)
                         );
                     }
 
-                    $msg = sprintf('Environment "%s" deployed successfully!', $env);
-                    $logger->info($msg);
-                    $output->writeln(sprintf('<info>%s</info>', $msg));
+                    foreach ($commands as $cmd) {
+                        $runner
+                            ->setCommand(
+                                $cmd,
+                                $env->getPath(),
+                                $exports
+                            )
+                            ->run(function ($type, $buffer) use ($output) {
+                                if ($type === Process::ERR) {
+                                    $output->writeln(sprintf(
+                                        '<error>%s</error>',
+                                        $buffer
+                                    ));
+                                } else {
+                                    $output->writeln(sprintf(
+                                        '<fg=cyan>%s</fg=cyan>',
+                                        $buffer
+                                    ));
+                                }
+                            });
+                    }
+
+                    $output->writeln(sprintf(
+                        '<info>Environment "%s" deployed successfully!</info>',
+                        $env->getName()
+                    ));
 
                 } catch (\RuntimeException $e) {
 
-                    foreach ($conf['rollback'] as $cmd) {
-                        $this->runCommand(
-                            $logger,
-                            $output,
-                            $cmd,
-                            $conf['path'],
-                            $env
+                    $output->writeln(sprintf(
+                        '<error>%s</error>',
+                        $e->getMessage()
+                    ));
+
+                    $commands = [];
+
+                    foreach ($env->getRollback() as $cmd) {
+                        $commands = array_merge(
+                            $commands,
+                            $resolver->resolve($cmd)
                         );
+                    }
+
+                    foreach ($commands as $cmd) {
+                        $runner
+                            ->setCommand(
+                                $cmd,
+                                $env->getPath(),
+                                $exports
+                            )
+                            ->run(function ($type, $buffer) use ($output) {
+                                if ($type === Process::ERR) {
+                                    $output->writeln(sprintf(
+                                        '<error>%s</error>',
+                                        $buffer
+                                    ));
+                                } else {
+                                    $output->writeln(sprintf(
+                                        '<fg=cyan>%s</fg=cyan>',
+                                        $buffer
+                                    ));
+                                }
+                            });
                     }
 
                     if (!$input->getOption('continue')) {
@@ -83,86 +138,12 @@ class EnvCommand extends Command implements ContainerAwareInterface
                     }
 
                 }
-            }
-        }
-    }
-
-    /**
-     * Run a specific command, bubble the output to the dev console
-     *
-     * @param Monolog\Logger $logger
-     * @param Symfony\Component\Console\Output\OutputInterface $output
-     * @param string $cmd
-     * @param string $path
-     * @param string $env
-     */
-    protected function runCommand($logger, $output, $cmd, $path, $env)
-    {
-        if (preg_match('/^%.+%$/i', $cmd)) {
-            $this->runMacro(
-                $logger,
-                $output,
-                $cmd,
-                $path,
-                $env
-            );
-            return;
-        }
-
-        $msg = sprintf('Running command "%s"', $cmd);
-        $logger->info($msg, [$env]);
-        $output->writeln(sprintf('<comment>%s</comment>', $msg));
-
-        $process = new Process($cmd, $path);
-        $process->run(function ($type, $buffer) use ($logger, $output) {
-            if ($type === 'err') {
-                $logger->error($buffer);
-                $output->write(sprintf('<error>%s</error>', $buffer));
             } else {
-                $logger->info($buffer);
-                $output->write(sprintf('<fg=cyan>%s</fg=cyan>', $buffer));
+                $output->writeln(sprintf(
+                    '<error>Environment "%s" not found',
+                    $env
+                ));
             }
-        });
-
-        if (!$process->isSuccessful()) {
-            $msg = sprintf('Command "%s" failure, attempt to rollback', $cmd);
-            $logger->emergency($msg);
-            $output->writeln(sprintf('<error>%s</error>', $msg));
-            throw new \RuntimeException($msg);
-        }
-    }
-
-    /**
-     * Run a set of commands
-     *
-     * @param Monolog\Logger $logger
-     * @param Symfony\Component\Console\Output\OutputInterface $output
-     * @param string $macro
-     * @param string $path
-     * @param string $env
-     */
-    protected function runMacro($logger, $output, $macro, $path, $env)
-    {
-        $macros = $this->container->getParameter('macros');
-        $macro = substr($macro, 1, -1);
-
-        if (!isset($macros, $macro)) {
-            $msg = sprintf('Macro "%s" not found', $macro);
-            $logger->error($msg);
-            $output->writeln(sprintf('<error>%s</error>', $msg));
-            throw new \RuntimeException($msg);
-        }
-
-        $cmds = $macros[$macro];
-
-        foreach ($cmds as $cmd) {
-            $this->runCommand(
-                $logger,
-                $output,
-                $cmd,
-                $path,
-                $env
-            );
         }
     }
 }

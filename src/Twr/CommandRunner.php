@@ -43,6 +43,21 @@ class CommandRunner
     }
 
     /**
+     * Set the timeout of the process
+     *
+     * @param int $timeout
+     *
+     * @return CommandRunner self
+     */
+
+    public function setTimeout($timeout)
+    {
+        $this->process->setTimeout($timeout);
+
+        return $this;
+    }
+
+    /**
      * Execute the passed command
      *
      * @throws RuntimeException If the command don't return a successful exit code
@@ -77,8 +92,9 @@ class CommandRunner
 
         if (!$this->process->isSuccessful()) {
             $msg = sprintf(
-                'Command line "%s" failed',
-                $this->process->getCommandLine()
+                'Command line "%s" failed with the following exit code: %s',
+                $this->process->getCommandLine(),
+                $code
             );
 
             $this->logger->emergency($msg, ['exitCode' => $code]);
