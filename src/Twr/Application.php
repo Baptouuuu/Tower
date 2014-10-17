@@ -70,6 +70,7 @@ class Application
             ->get('macros_bag')
             ->setAll($config['macros']);
         $this->container->setParameter('log_path', $config['log_path']);
+        $this->container->setParameter('mail', $config['mail']);
 
         return $this;
     }

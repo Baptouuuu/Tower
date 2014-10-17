@@ -30,6 +30,7 @@
         "symfony/config": "2.5.*",
         "symfony/finder": "2.5.*",
         "symfony/process": "2.5.*",
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "swiftmailer/swiftmailer": "@stable"
     }
 }
