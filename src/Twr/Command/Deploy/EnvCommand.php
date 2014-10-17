@@ -110,6 +110,13 @@ class EnvCommand extends Command implements ContainerAwareInterface
                         $e->getMessage()
                     ));
 
+                    $this->container
+                        ->get('mailer')
+                        ->send(
+                            '"'.$env->getName().'" failed to deploy',
+                            $e->getMessage()
+                        );
+
                     $commands = [];
 
                     foreach ($env->getRollback() as $cmd) {
