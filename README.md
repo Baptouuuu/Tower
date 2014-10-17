@@ -73,6 +73,15 @@ export PATH=~/.composer/vendor/bin:$PATH
 ```yaml
 log_path: %root_dir%/deploy.log # path where you want to get your log (%root_dir% is the path to the tower directory)
 
+mail: # optional, used to send a mail when a env deploy fails
+    transport: mail|sendmail|smtp
+    username: ~
+    password: ~
+    host: ~
+    port: ~
+    to: sysadmin@company.tld
+    from: server.name@company.tld
+
 macros:
     macroName: # set of commands (can be nested)
         - mysqldump
@@ -104,6 +113,7 @@ childs:
 * a macro can contain another macro, still the same syntax: `%macroName%`
 * setup ssh keys between a node and its childs to connect without password, otherwise cascade deployment will fail
 * an export command can reuse the previous exported values, all the exported values are available in `commands` and `rollback` ones
+* the mail sent when an env fails to deploy contains the log file as attachment
 
 ## Usage
 
