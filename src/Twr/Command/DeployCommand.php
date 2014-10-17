@@ -92,19 +92,25 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
                 $cmd = $builder->getCommandLine();
 
-                $output->writeln(sprintf(
-                    '<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>',
-                    $child->getName()
-                ));
-                $output->writeln(sprintf(
-                    '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
-                    $cmd
-                ));
+                if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+                    $output->writeln(sprintf(
+                        '<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>',
+                        $child->getName()
+                    ));
+                    $output->writeln(sprintf(
+                        '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
+                        $cmd
+                    ));
+                }
 
                 $runner
                     ->setCommand($cmd)
                     ->setTimeout($tmout)
                     ->run(function ($type, $buffer) use ($output) {
+                        if ($output->getVerbosity() === OutputInterface::VERBOSITY_QUIET) {
+                            return;
+                        }
+
                         $output->write($buffer);
                     });
 
@@ -121,15 +127,21 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
                     $cmd = $builder->getCommandLine();
 
-                    $output->writeln(sprintf(
-                        '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
-                        $cmd
-                    ));
+                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+                        $output->writeln(sprintf(
+                            '<info>Running "<fg=cyan>%s</fg=cyan>"...</info>',
+                            $cmd
+                        ));
+                    }
 
                     $runner
                         ->setCommand($cmd)
                         ->setTimeout($tmout)
                         ->run(function ($type, $buffer) use ($output) {
+                            if ($output->getVerbosity() === OutputInterface::VERBOSITY_QUIET) {
+                                return;
+                            }
+
                             $output->write($buffer);
                         });
                 }

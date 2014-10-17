@@ -52,10 +52,12 @@ class EnvCommand extends Command implements ContainerAwareInterface
                     $env->getName()
                 );
 
-                $output->writeln(sprintf(
-                    '<info>Starting to deploy the environment "%s"</info>',
-                    $env->getName()
-                ));
+                if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+                    $output->writeln(sprintf(
+                        '<info>Starting to deploy the environment "%s"</info>',
+                        $env->getName()
+                    ));
+                }
 
                 try {
 
@@ -76,6 +78,10 @@ class EnvCommand extends Command implements ContainerAwareInterface
                                 $exports
                             )
                             ->run(function ($type, $buffer) use ($output) {
+                                if ($output->getVerbosity() === OutputInterface::VERBOSITY_QUIET) {
+                                    return;
+                                }
+
                                 if ($type === Process::ERR) {
                                     $output->writeln(sprintf(
                                         '<error>%s</error>',
@@ -90,10 +96,12 @@ class EnvCommand extends Command implements ContainerAwareInterface
                             });
                     }
 
-                    $output->writeln(sprintf(
-                        '<info>Environment "%s" deployed successfully!</info>',
-                        $env->getName()
-                    ));
+                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+                        $output->writeln(sprintf(
+                            '<info>Environment "%s" deployed successfully!</info>',
+                            $env->getName()
+                        ));
+                    }
 
                 } catch (\RuntimeException $e) {
 
@@ -119,6 +127,10 @@ class EnvCommand extends Command implements ContainerAwareInterface
                                 $exports
                             )
                             ->run(function ($type, $buffer) use ($output) {
+                                if ($output->getVerbosity() === OutputInterface::VERBOSITY_QUIET) {
+                                    return;
+                                }
+
                                 if ($type === Process::ERR) {
                                     $output->writeln(sprintf(
                                         '<error>%s</error>',
