@@ -61,3 +61,7 @@ services:
 
     builder:
         class: Twr\CommandBuilder
+
+    mailer:
+        class: Twr\Mailer
+        arguments: ['%mail%', '%log_path%']
