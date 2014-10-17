@@ -14,7 +14,7 @@
     "support": {
         "issues": "https://github.com/Baptouuuu/Tower/issues"
     },
-    "license": "MIT"
+    "license": "MIT",
     "bin": ["twr"],
     "autoload": {
         "psr-0": {
