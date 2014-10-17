@@ -54,45 +54,33 @@ Another use case would be you have a single server for your app, and other serve
 
 ## Installation
 
-### Cloning
+This is done via composer. Run the following command to install to install Tower as a global dependency.
 
-Clone this repository to the machine you want as a node
 ```sh
-git clone git@github.com:Baptouuuu/Tower.git /wherever/you/want
+composer global require baptouuuu/tower
 ```
 
-Install composer
+This will install the binary file in `~/.composer/vendor/bin`.
+
+Now to have the bin file as global command you need to set the folder in your system path. You can do by adding the line below in `~/.bash_profile` or `~/.bashrc`.
+
 ```sh
-curl -sS https://getcomposer.org/installer | php ; ./composer.phar install
+export PATH=~/.composer/vendor/bin:$PATH
 ```
-
-Create your `config.yml` file
-```sh
-cp config/config.yml.dist config/config.yml
-```
-
-(Optional) For easier access, make the command available as a global one
-```sh
-ln -sn /tower/folder/twr /usr/bin/twr
-```
-
-### Phar file
-
-You can also download the [phar file](twr.phar) and create a file named `tower.yml` in your app (look at the [dist file](config/config.yml.dist) for an example).
-
-And to use it:
-```sh
-./twr.phar deploy
-```
-
-**Note**: you can run `chmod + x twr.phar && mv twr.phar /usr/bin/tower`, so you can run the tower deploy from any project.
-
-Done!
 
 ## Configuration
 
 ```yaml
 log_path: %root_dir%/deploy.log # path where you want to get your log (%root_dir% is the path to the tower directory)
+
+mail: # optional, used to send a mail when a env deploy fails
+    transport: mail|sendmail|smtp
+    username: ~
+    password: ~
+    host: ~
+    port: ~
+    to: sysadmin@company.tld
+    from: server.name@company.tld
 
 macros:
     macroName: # set of commands (can be nested)
@@ -102,6 +90,9 @@ macros:
 envs:
     prod: # define where is a local environment + how to deploy it
         path: /var/www/my-awesome-project
+        exports: #optional
+            - echo "ENV_KEY=someEnvVariableAvailableToAllCommands"
+            - echo "FOO=$ENV_KEY"
         commands:
             - %macroName%
             - curl -sS https://getcomposer.org/installer | php ; ./composer.phar install
@@ -121,6 +112,8 @@ childs:
 * rotate your logs, every output for a local deployment is logged (so it can quickly become huge)
 * a macro can contain another macro, still the same syntax: `%macroName%`
 * setup ssh keys between a node and its childs to connect without password, otherwise cascade deployment will fail
+* an export command can reuse the previous exported values, all the exported values are available in `commands` and `rollback` ones
+* the mail sent when an env fails to deploy contains the log file as attachment
 
 ## Usage
 

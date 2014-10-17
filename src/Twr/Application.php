@@ -27,6 +27,8 @@ class Application
         $this->container->setParameter('root_dir', $this->dir);
 
         $this->loadConfig();
+
+        $this->container->compile();
     }
 
     /**
@@ -58,10 +60,17 @@ class Application
             exit(1);
         }
 
-        $this->container->setParameter('envs', $config['envs']);
-        $this->container->setParameter('childs', $config['childs']);
-        $this->container->setParameter('macros', $config['macros']);
+        $this->container
+            ->get('envs_bag')
+            ->setAll($config['envs']);
+        $this->container
+            ->get('childs_bag')
+            ->setAll($config['childs']);
+        $this->container
+            ->get('macros_bag')
+            ->setAll($config['macros']);
         $this->container->setParameter('log_path', $config['log_path']);
+        $this->container->setParameter('mail', $config['mail']);
 
         return $this;
     }
@@ -73,30 +82,17 @@ class Application
      */
     public function loadCommands()
     {
-        $finder = new Finder();
-        $iterator = $finder
-            ->files()
-            ->name('*Command.php')
-            ->in($this->dir.'/src');
+        $services = $this->container->findTaggedServiceIds('command');
 
-        foreach($iterator as $file) {
-            require_once $file->getRealPath();
-        }
+        foreach ($services as $id => $attributes) {
+            $command = $this->container->get($id);
+            $refl = new \ReflectionObject($command);
 
-        $classes = get_declared_classes();
-
-        foreach ($classes as $class) {
-            $refl = new \ReflectionClass($class);
-
-            if ($refl->isSubclassOf('Symfony\Component\Console\Command\Command')) {
-                $cmd = $refl->newInstance();
-
-                if ($refl->implementsInterface('Symfony\Component\DependencyInjection\ContainerAwareInterface')) {
-                    $cmd->setContainer($this->container);
-                }
-
-                $this->console->add($cmd);
+            if ($refl->implementsInterface('Symfony\Component\DependencyInjection\ContainerAwareInterface')) {
+                $command->setContainer($this->container);
             }
+
+            $this->console->add($command);
         }
 
         return $this;
