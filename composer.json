@@ -7,12 +7,12 @@
         }
     },
     "require": {
-        "symfony/yaml": "2.3.*",
-        "symfony/console": "2.3.*",
+        "symfony/yaml": "2.5.*",
+        "symfony/console": "2.5.*",
         "monolog/monolog": "1.6.*",
-        "symfony/filesystem": "2.3.*",
-        "symfony/dependency-injection": "2.4.*",
-        "symfony/config": "2.3.*",
+        "symfony/filesystem": "2.5.*",
+        "symfony/dependency-injection": "2.5.*",
+        "symfony/config": "2.5.*",
         "symfony/finder": "2.5.*",
         "symfony/process": "2.5.*"
     }
