@@ -1,5 +1,20 @@
 {
     "name": "baptouuuu/tower",
+    "description": "tool to deploy servers structured as a tree",
+    "version": "2.0.0-alpha",
+    "keywords": ["deploy", "tool"],
+    "authors": [
+        {
+            "name": "Baptiste Langlade",
+            "email": "langlade.baptiste@gmail.com",
+            "homepage": "https://github.com/Baptouuuu",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Baptouuuu/Tower/issues"
+    },
+    "license": "MIT"
     "bin": ["twr"],
     "autoload": {
         "psr-0": {
@@ -14,6 +29,7 @@
         "symfony/dependency-injection": "2.5.*",
         "symfony/config": "2.5.*",
         "symfony/finder": "2.5.*",
-        "symfony/process": "2.5.*"
+        "symfony/process": "2.5.*",
+        "php": ">=5.3.3"
     }
 }
