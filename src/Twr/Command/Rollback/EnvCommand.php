@@ -1,6 +1,6 @@
 <?php
 
-namespace Twr\Command\Deploy;
+namespace Twr\Command\Rollback;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,8 +18,8 @@ class EnvCommand extends Command implements ContainerAwareInterface
     protected function configure()
     {
         $this
-            ->setName('deploy:env')
-            ->setDescription('Deploy the env locally by running all the specified commands')
+            ->setName('rollback:env')
+            ->setDescription('Rollback the env locally by running all the specified commands')
             ->addArgument(
                 'env',
                 InputArgument::IS_ARRAY | InputArgument::OPTIONAL,
@@ -29,7 +29,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
                 'continue',
                 null,
                 InputOption::VALUE_NONE,
-                'Continue the deployment of others envs if one fails'
+                'Continue the rollback of others envs if one fails'
             );
     }
 
@@ -54,68 +54,12 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
                 if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                     $output->writeln(sprintf(
-                        '<info>Starting to deploy the environment "<fg=cyan>%s</fg=cyan>"</info>',
+                        '<info>Starting to rollback the environment "<fg=cyan>%s</fg=cyan>"</info>',
                         $env->getName()
                     ));
                 }
 
                 try {
-
-                    $commands = [];
-
-                    foreach ($env->getCommands() as $cmd) {
-                        $commands = array_merge(
-                            $commands,
-                            $resolver->resolve($cmd)
-                        );
-                    }
-
-                    foreach ($commands as $cmd) {
-                        $runner
-                            ->setCommand(
-                                $cmd,
-                                $env->getPath(),
-                                $exports
-                            )
-                            ->run(function ($type, $buffer) use ($output) {
-                                if ($output->getVerbosity() === OutputInterface::VERBOSITY_QUIET) {
-                                    return;
-                                }
-
-                                if ($type === Process::ERR) {
-                                    $output->writeln(sprintf(
-                                        '<error>%s</error>',
-                                        $buffer
-                                    ));
-                                } else {
-                                    $output->writeln(sprintf(
-                                        '<fg=cyan>%s</fg=cyan>',
-                                        $buffer
-                                    ));
-                                }
-                            });
-                    }
-
-                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
-                        $output->writeln(sprintf(
-                            '<info>Environment "<fg=cyan>%s</fg=cyan>" deployed successfully!</info>',
-                            $env->getName()
-                        ));
-                    }
-
-                } catch (\RuntimeException $e) {
-
-                    $output->writeln(sprintf(
-                        '<error>%s</error>',
-                        $e->getMessage()
-                    ));
-
-                    $this->container
-                        ->get('mailer')
-                        ->send(
-                            '"'.$env->getName().'" failed to deploy',
-                            $e->getMessage()
-                        );
 
                     $commands = [];
 
@@ -151,6 +95,27 @@ class EnvCommand extends Command implements ContainerAwareInterface
                                 }
                             });
                     }
+
+                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+                        $output->writeln(sprintf(
+                            '<info>Environment "<fg=cyan>%s</fg=cyan>" rollbacked successfully!</info>',
+                            $env->getName()
+                        ));
+                    }
+
+                } catch (\RuntimeException $e) {
+
+                    $output->writeln(sprintf(
+                        '<error>%s</error>',
+                        $e->getMessage()
+                    ));
+
+                    $this->container
+                        ->get('mailer')
+                        ->send(
+                            '"'.$env->getName().'" failed to rollback',
+                            $e->getMessage()
+                        );
 
                     if (!$input->getOption('continue')) {
                         throw $e;

@@ -11,37 +11,37 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Process\Process;
 
-class DeployCommand extends Command implements ContainerAwareInterface
+class RollbackCommand extends Command implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
     protected function configure()
     {
         $this
-            ->setName('deploy')
-            ->setDescription('Deploy the specified childs nodes')
+            ->setName('rollback')
+            ->setDescription('Rollback the specified childs nodes')
             ->addArgument(
                 'child',
                 InputArgument::IS_ARRAY,
-                'Deploy the specified childs (if none, deploy all of them)'
+                'Rollback the specified childs (if none, deploy all of them)'
             )
             ->addOption(
                 'env',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'The envs to deploy on the specified childs (if none, deploy all of them)'
+                'The envs to rollback on the specified childs (if none, deploy all of them)'
             )
             ->addOption(
                 'cascade',
                 'c',
                 InputOption::VALUE_NONE,
-                'Whether or not to deploy sub-childs'
+                'Whether or not to rollback sub-childs'
             )
             ->addOption(
                 'async',
                 null,
                 InputOption::VALUE_NONE,
-                'Whether or not to deploy asynchronously the childs'
+                'Whether or not to rollback asynchronously the childs'
             )
             ->addOption(
                 'tmout',
@@ -81,7 +81,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
                 $child = $bag->get($child);
 
                 $builder
-                    ->setCommand('deploy:env')
+                    ->setCommand('rollback:env')
                     ->setArguments($args)
                     ->setHost($child->getHost())
                     ->setPath($child->getPath());
@@ -94,7 +94,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
                 if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                     $output->writeln(sprintf(
-                        '<info>Deploying "<fg=cyan>%s</fg=cyan>"...</info>',
+                        '<info>Attempt to rollback "<fg=cyan>%s</fg=cyan>"...</info>',
                         $child->getName()
                     ));
                     $output->writeln(sprintf(
@@ -116,7 +116,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
 
                 if ($cascade) {
                     $builder
-                        ->setCommand('deploy')
+                        ->setCommand('rollback')
                         ->setArguments($namedArgs)
                         ->setHost($child->getHost())
                         ->setPath($child->getPath());
