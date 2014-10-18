@@ -83,12 +83,12 @@ class EnvCommand extends Command implements ContainerAwareInterface
                                 }
 
                                 if ($type === Process::ERR) {
-                                    $output->writeln(sprintf(
+                                    $output->write(sprintf(
                                         '<error>%s</error>',
                                         $buffer
                                     ));
                                 } else {
-                                    $output->writeln(sprintf(
+                                    $output->write(sprintf(
                                         '<fg=cyan>%s</fg=cyan>',
                                         $buffer
                                     ));
