@@ -25,6 +25,11 @@ services:
         tags:
             - { name: command }
 
+    command.rollback:
+        class: Twr\Command\RollbackCommand
+        tags:
+            - { name: command }
+
     command.config:
         class: Twr\Command\ConfigCommand
         tags:
@@ -32,6 +37,11 @@ services:
 
     command.deploy_env:
         class: Twr\Command\Deploy\EnvCommand
+        tags:
+            - { name: command }
+
+    command.rollback_env:
+        class: Twr\Command\Rollback\EnvCommand
         tags:
             - { name: command }
 
