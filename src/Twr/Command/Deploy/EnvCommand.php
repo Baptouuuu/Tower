@@ -54,7 +54,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
                 if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                     $output->writeln(sprintf(
-                        '<info>Starting to deploy the environment "%s"</info>',
+                        '<info>Starting to deploy the environment "<fg=cyan>%s</fg=cyan>"</info>',
                         $env->getName()
                     ));
                 }
@@ -98,7 +98,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
                     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                         $output->writeln(sprintf(
-                            '<info>Environment "%s" deployed successfully!</info>',
+                            '<info>Environment "<fg=cyan>%s</fg=cyan>" deployed successfully!</info>',
                             $env->getName()
                         ));
                     }
@@ -159,7 +159,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
                 }
             } else {
                 $output->writeln(sprintf(
-                    '<error>Environment "%s" not found',
+                    '<error>Environment "<fg=cyan>%s</fg=cyan>" not found',
                     $env
                 ));
             }

@@ -54,7 +54,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
                 if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                     $output->writeln(sprintf(
-                        '<info>Starting to rollback the environment "%s"</info>',
+                        '<info>Starting to rollback the environment "<fg=cyan>%s</fg=cyan>"</info>',
                         $env->getName()
                     ));
                 }
@@ -98,7 +98,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
 
                     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
                         $output->writeln(sprintf(
-                            '<info>Environment "%s" rollbacked successfully!</info>',
+                            '<info>Environment "<fg=cyan>%s</fg=cyan>" rollbacked successfully!</info>',
                             $env->getName()
                         ));
                     }
@@ -124,7 +124,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
                 }
             } else {
                 $output->writeln(sprintf(
-                    '<error>Environment "%s" not found',
+                    '<error>Environment "<fg=cyan>%s</fg=cyan>" not found',
                     $env
                 ));
             }
