@@ -19,7 +19,7 @@ class EnvCommand extends Command implements ContainerAwareInterface
     {
         $this
             ->setName('deploy:env')
-            ->setDescription('Deploy the env locally by running the all the specified commands')
+            ->setDescription('Deploy the env locally by running all the specified commands')
             ->addArgument(
                 'env',
                 InputArgument::IS_ARRAY | InputArgument::OPTIONAL,

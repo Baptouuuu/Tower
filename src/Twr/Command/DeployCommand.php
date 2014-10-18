@@ -29,7 +29,7 @@ class DeployCommand extends Command implements ContainerAwareInterface
                 'env',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'The envs to deploy on the specified childs (if none, deploy all of them'
+                'The envs to deploy on the specified childs (if none, deploy all of them)'
             )
             ->addOption(
                 'cascade',
