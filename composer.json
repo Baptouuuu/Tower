@@ -1,7 +1,7 @@
 {
     "name": "baptouuuu/tower",
     "description": "tool to deploy servers structured as a tree",
-    "version": "2.0.0-alpha",
+    "version": "2.1.2",
     "keywords": ["deploy", "tool"],
     "authors": [
         {
